@@ -1,227 +1,227 @@
 :root {
-	color-scheme: light;
+    color-scheme: light;
 
-	--color-background: #fafafa;
-	--color-text: #333;
+    --color-background: #fafafa;
+    --color-text: #333;
 
-	--color-map: #ccc;
-	--color-map-outline: #333;
-	--color-map-selected: #999;
-	--color-map-visited: #f66;
-	--color-map-visited-selected: #c33;
-	--color-map-starting: #66f;
-	--color-map-starting-selected: #33c;
+    --color-map: #ccc;
+    --color-map-outline: #333;
+    --color-map-selected: #999;
+    --color-map-visited: #f66;
+    --color-map-visited-selected: #c33;
+    --color-map-starting: #66f;
+    --color-map-starting-selected: #33c;
 
-	--color-aside: #fdf1fa;
+    --color-aside: #fdf1fa;
 
-	--color-button: #e0f0f9;
-	--color-button-red: #f4e0e0;
-	--color-button-aside-hover: #f6f1f6;
+    --color-button: #e0f0f9;
+    --color-button-red: #f4e0e0;
+    --color-button-aside-hover: #f6f1f6;
 }
 
 body.dark-mode {
-	color-scheme: dark;
+    color-scheme: dark;
 
-	--color-background: #202020;
-	--color-text: #cacaca;
+    --color-background: #202020;
+    --color-text: #cacaca;
 
-	--color-map: #333;
-	--color-map-outline: #999;
-	--color-map-selected: #555;
-	--color-map-visited: #633;
-	--color-map-visited-selected: #600;
-	--color-map-starting: #336;
-	--color-map-starting-selected: #006;
+    --color-map: #333;
+    --color-map-outline: #999;
+    --color-map-selected: #555;
+    --color-map-visited: #633;
+    --color-map-visited-selected: #600;
+    --color-map-starting: #336;
+    --color-map-starting-selected: #006;
 
-	--color-aside: #232020;
+    --color-aside: #232020;
 
-	--color-button: #333;
-	--color-button-red: #422;
-	--color-button-aside-hover: #232023;
+    --color-button: #333;
+    --color-button-red: #422;
+    --color-button-aside-hover: #232023;
 }
 
 body {
-	margin: 0;
-	background-color: var(--color-background);
-	color: var(--color-text);
-	font-family: "Montserrat", sans-serif;
-	line-height: 1.4em;
+    margin: 0;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: "Montserrat", sans-serif;
+    line-height: 1.4em;
 }
 
 .map {
-	width: auto;
-	height: 100vh;
-	margin: auto;
+    width: auto;
+    height: 100vh;
+    margin: auto;
 }
 
 #main {
-	display: flex;
-	flex-flow: row wrap;
-	justify-content: end;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: end;
 }
 
 #aside-info {
-	max-width: min-content;
-	background-color: var(--color-background);
-	display: flex;
-	flex-direction: column;
+    max-width: min-content;
+    background-color: var(--color-background);
+    display: flex;
+    flex-direction: column;
 }
 
 #aside-text {
-	padding: 20px;
-	background-color: var(--color-aside);
-	height: 100%;
-	border-radius: 60px;
+    padding: 20px;
+    background-color: var(--color-aside);
+    height: 100%;
+    border-radius: 60px;
 }
 
 .stats-list li {
-	padding: 5px 0;
+    padding: 5px 0;
 }
 
 .powiat-buttons,
 .save-buttons {
-	display: flex;
-	flex-flow: row wrap;
+    display: flex;
+    flex-flow: row wrap;
 }
 
 .powiat-button,
 .save-button {
-	background-color: var(--color-button);
-	padding: 10px 15px;
-	margin: 5px;
-	border-radius: 5px;
-	cursor: pointer;
+    background-color: var(--color-button);
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 #button-powiat-change,
 #button-save-reset {
-	background-color: var(--color-button-red);
+    background-color: var(--color-button-red);
 }
 
 .aside-nav {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	overflow: hidden;
-	background-color: var(--color-background);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    background-color: var(--color-background);
 }
 
 .aside-button {
-	flex: 1;
-	text-align: center;
-	cursor: pointer;
-	padding: 20px;
-	transition: 0.3s ease-out;
-	white-space: nowrap;
-	background-color: var(--color-background);
-	border-top-left-radius: 30px;
-	border-top-right-radius: 30px;
-	margin-right: 2px;
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+    padding: 20px;
+    transition: 0.3s ease-out;
+    white-space: nowrap;
+    background-color: var(--color-background);
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    margin-right: 2px;
 }
 
 .aside-button:last-of-type {
-	margin-right: 0;
+    margin-right: 0;
 }
 
 .aside-button:hover {
-	background-color: var(--color-button-aside-hover);
+    background-color: var(--color-button-aside-hover);
 }
 
 .border-radius-first#aside-text {
-	border-top-left-radius: 0px;
+    border-top-left-radius: 0px;
 }
 
 .border-radius-last#aside-text {
-	border-top-right-radius: 0px;
+    border-top-right-radius: 0px;
 }
 
 .map path {
-	fill: var(--color-map);
-	stroke: var(--color-map-outline);
-	stroke-width: 1px;
-	stroke-linejoin: round;
+    fill: var(--color-map);
+    stroke: var(--color-map-outline);
+    stroke-width: 1px;
+    stroke-linejoin: round;
 }
 
 .aside-selected {
-	background-color: var(--color-aside) !important;
+    background-color: var(--color-aside) !important;
 }
 
 .map .visited {
-	fill: var(--color-map-visited);
+    fill: var(--color-map-visited);
 }
 
 .map .starting {
-	fill: var(--color-map-starting);
+    fill: var(--color-map-starting);
 }
 
 .selected {
-	animation: alternate 0.7s infinite selectedAnim ease-in-out;
+    animation: alternate 0.7s infinite selectedAnim ease-in-out;
 }
 
 .selected.visited {
-	animation: alternate 0.7s infinite visitedSelectedAnim ease-in-out;
+    animation: alternate 0.7s infinite visitedSelectedAnim ease-in-out;
 }
 
 .selected.starting {
-	animation: alternate 0.7s infinite visitedStartingAnim ease-in-out;
+    animation: alternate 0.7s infinite visitedStartingAnim ease-in-out;
 }
 
 @media screen and (max-width: 1100px) {
-	#main {
-		flex-flow: column nowrap;
-		justify-content: start;
-	}
+    #main {
+        flex-flow: column nowrap;
+        justify-content: start;
+    }
 
-	.map {
-		width: 100vw;
-		height: auto;
-	}
+    .map {
+        width: 100vw;
+        height: auto;
+    }
 
-	#aside-info,
-	.aside-nav,
-	#aside-text {
-		width: 100vw;
-	}
+    #aside-info,
+    .aside-nav,
+    #aside-text {
+        width: 100vw;
+    }
 
-	.aside-nav {
-		flex-direction: column;
-	}
+    .aside-nav {
+        flex-direction: column;
+    }
 
-	.aside-button {
-		margin: 0;
-		border-radius: 0;
-	}
+    .aside-button {
+        margin: 0;
+        border-radius: 0;
+    }
 
-	#aside-text {
-		padding: 5px;
-		box-sizing: border-box;
-		border-radius: 0;
-	}
+    #aside-text {
+        padding: 5px;
+        box-sizing: border-box;
+        border-radius: 0;
+    }
 }
 
 @keyframes selectedAnim {
-	from {
-		fill: var(--color-map);
-	}
-	to {
-		fill: var(--color-map-selected);
-	}
+    from {
+        fill: var(--color-map);
+    }
+    to {
+        fill: var(--color-map-selected);
+    }
 }
 
 @keyframes visitedSelectedAnim {
-	from {
-		fill: var(--color-map-visited);
-	}
-	to {
-		fill: var(--color-map-visited-selected);
-	}
+    from {
+        fill: var(--color-map-visited);
+    }
+    to {
+        fill: var(--color-map-visited-selected);
+    }
 }
 
 @keyframes visitedStartingAnim {
-	from {
-		fill: var(--color-map-starting);
-	}
-	to {
-		fill: var(--color-map-starting-selected);
-	}
+    from {
+        fill: var(--color-map-starting);
+    }
+    to {
+        fill: var(--color-map-starting-selected);
+    }
 }
