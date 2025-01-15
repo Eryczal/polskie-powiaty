@@ -308,6 +308,41 @@ function importData() {
     }
 }
 
+let viewBox = { x: 0, y: 0, width: 800, height: 744 };
+
+function scaleMap(event) {
+    event.preventDefault();
+
+    const map = document.getElementById("map");
+
+    const rect = map.getBoundingClientRect();
+
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    const svgX = (mouseX / rect.width) * viewBox.width + viewBox.x;
+    const svgY = (mouseY / rect.height) * viewBox.height + viewBox.y;
+
+    const zoomFactor = 0.1;
+    const zoomDirection = event.deltaY < 0 ? 1 : -1;
+    const scaleChange = zoomDirection * zoomFactor;
+
+    const newWidth = Math.min(Math.max(viewBox.width * (1 - scaleChange), 40), 800);
+    const newHeight = Math.min(Math.max(viewBox.height * (1 - scaleChange), 37.2), 744);
+
+    viewBox.x = svgX - ((svgX - viewBox.x) * newWidth) / viewBox.width;
+    viewBox.y = svgY - ((svgY - viewBox.y) * newHeight) / viewBox.height;
+    viewBox.width = newWidth;
+    viewBox.height = newHeight;
+
+    if (newWidth >= 800 && newHeight >= 744) {
+        viewBox.x = 0;
+        viewBox.y = 0;
+    }
+
+    map.setAttribute("viewBox", `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+}
+
 document.getElementById("aside-stats").addEventListener("click", clickStats);
 document.getElementById("aside-powiat").addEventListener("click", clickPowiat);
 document.getElementById("aside-save").addEventListener("click", clickSave);
@@ -328,6 +363,8 @@ if (!mobile) {
             () => !document.getElementById("dark-mode") && document.getElementById("aside-text").classList.remove("border-radius-last")
         );
 }
+
+document.getElementById("map").addEventListener("wheel", scaleMap);
 
 getData();
 clickStats();
