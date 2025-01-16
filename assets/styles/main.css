@@ -49,9 +49,8 @@ body {
 }
 
 .map {
-    width: auto;
     height: 100vh;
-    margin: auto;
+    flex-grow: 1;
 }
 
 #main {
