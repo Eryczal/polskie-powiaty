@@ -1,17 +1,12 @@
+import { EventBus } from "./EventBus.js";
 import { MapManager } from "./MapManager.js";
+import { PageManager } from "./PageManager.js";
 
-const mapManager = new MapManager();
-
-mapManager.counties.forEach((county) => {
-    county.element.addEventListener("click", (e) => clickMap(e));
-});
+const eventBus = new EventBus();
+const mapManager = new MapManager(eventBus);
+const pageManager = new PageManager(eventBus);
 
 var currentPowiat = null;
-var powiatStates = [
-    "Powiat nie został jeszcze przez ciebie odwiedzony.",
-    'Powiat został przez ciebie odwiedzony <span id="visited-date"></span>.',
-    "Powiat wybrany przez ciebie jako początkowy.",
-];
 
 var settings = {
     darkMode: false,
@@ -21,27 +16,6 @@ let mobile = window.innerWidth < 1100;
 var intl = new Intl.DateTimeFormat("pl-PL", { dateStyle: "long" });
 
 var asideButtons = document.getElementsByClassName("aside-button");
-
-var statsElement = `
-    <h1>Statystyki</h1>
-    <ul class="stats-list">
-        <li>Powiat początkowy:<br><span id="starting-powiat"></span></li>
-        <li>Pierwszy odwiedzony powiat:<br><span id="first-powiat"></span></li>
-        <li>Ostatnio odwiedzony powiat:<br><span id="last-powiat"></span></li>
-        <li>Liczba odwiedzonych powiatów: <span id="visited-powiats"></span>/<span id="max-powiats"></span></li>
-    </ul>
-`;
-
-var powiatElement = `
-    <h1 id="powiat-name"></h1>
-    <p id="powiat-state"></p>
-    <div class="powiat-buttons">
-        <div class="powiat-button" id="button-powiat-visited">Oznacz jako odwiedzony</div>
-        <div class="powiat-button" id="button-starting-powiat">Oznacz jako początkowy</div>
-        <div class="powiat-button" id="button-powiat-unselect">Odznacz mapę</div>
-        <div class="powiat-button" id="button-powiat-change">Oznacz jako nieodwiedzony</div>
-    </div>
-`;
 
 var saveElement = `
     <h1>Zapis</h1>
@@ -59,13 +33,13 @@ var settingsElement = `
     <p><input id="settings-dark-mode" type="checkbox"> Ciemny motyw</p>
 `;
 
-function clickMap(event) {
+function clickMap(e) {
     if (currentPowiat !== null) {
         currentPowiat.classList.remove("selected");
     }
-    currentPowiat = event.currentTarget;
+    currentPowiat = e.currentTarget;
     currentPowiat.classList.add("selected");
-    clickPowiat();
+    eventBus.emit("changePage", { page: "county", target: e.currentTarget });
 }
 
 function removeAsideClass() {
@@ -76,56 +50,41 @@ function removeAsideClass() {
     document.getElementById("aside-text").classList.remove("border-radius-last");
 }
 
-function clickStats() {
-    removeAsideClass();
-    document.getElementById("aside-text").classList.add("border-radius-first");
-    let startingPowiat = mapManager.counties.find((powiat) => powiat.state == 2)?.name ? mapManager.counties.find((powiat) => powiat.state == 2).name : "Brak";
-    let firstPowiat = null;
-    let lastPowiat = null;
+function clickStats(e) {
+    eventBus.emit("changePage", { page: "stats", target: e.currentTarget });
+    // removeAsideClass();
+    // document.getElementById("aside-text").classList.add("border-radius-first");
+    // let startingPowiat = mapManager.counties.find((powiat) => powiat.state == 2)?.name ? mapManager.counties.find((powiat) => powiat.state == 2).name : "Brak";
+    // let firstPowiat = null;
+    // let lastPowiat = null;
 
-    for (let i = 0; i < mapManager.counties.length; i++) {
-        if (Date.parse(mapManager.counties[i].date) != NaN) {
-            if (Date.parse(mapManager.counties[i].date) < (Date.parse(mapManager.counties[firstPowiat]?.date) || Number.POSITIVE_INFINITY)) {
-                firstPowiat = i;
-            }
-            if (Date.parse(mapManager.counties[i].date) > (Date.parse(mapManager.counties[lastPowiat]?.date) || Number.NEGATIVE_INFINITY)) {
-                lastPowiat = i;
-            }
-        }
-    }
+    // for (let i = 0; i < mapManager.counties.length; i++) {
+    //     if (Date.parse(mapManager.counties[i].date) != NaN) {
+    //         if (Date.parse(mapManager.counties[i].date) < (Date.parse(mapManager.counties[firstPowiat]?.date) || Number.POSITIVE_INFINITY)) {
+    //             firstPowiat = i;
+    //         }
+    //         if (Date.parse(mapManager.counties[i].date) > (Date.parse(mapManager.counties[lastPowiat]?.date) || Number.NEGATIVE_INFINITY)) {
+    //             lastPowiat = i;
+    //         }
+    //     }
+    // }
 
-    document.getElementById("aside-stats").classList.add("aside-selected");
-    document.getElementById("aside-text").innerHTML = statsElement;
-    document.getElementById("starting-powiat").insertAdjacentText("beforeend", startingPowiat);
-    if (firstPowiat !== null) {
-        document
-            .getElementById("first-powiat")
-            .insertAdjacentText("beforeend", mapManager.counties[firstPowiat].name + " (" + intl.format(mapManager.counties[firstPowiat].date) + ")");
-        document
-            .getElementById("last-powiat")
-            .insertAdjacentText("beforeend", mapManager.counties[lastPowiat].name + " (" + intl.format(mapManager.counties[lastPowiat].date) + ")");
-    }
-    document.getElementById("visited-powiats").insertAdjacentText("beforeend", mapManager.visitedCounties);
-    document.getElementById("max-powiats").insertAdjacentText("beforeend", mapManager.counties.length);
+    // document.getElementById("aside-stats").classList.add("aside-selected");
+    // document.getElementById("aside-text").innerHTML = statsElement;
+    // document.getElementById("starting-powiat").insertAdjacentText("beforeend", startingPowiat);
+    // if (firstPowiat !== null) {
+    //     document
+    //         .getElementById("first-powiat")
+    //         .insertAdjacentText("beforeend", mapManager.counties[firstPowiat].name + " (" + intl.format(mapManager.counties[firstPowiat].date) + ")");
+    //     document
+    //         .getElementById("last-powiat")
+    //         .insertAdjacentText("beforeend", mapManager.counties[lastPowiat].name + " (" + intl.format(mapManager.counties[lastPowiat].date) + ")");
+    // }
+    // document.getElementById("visited-powiats").insertAdjacentText("beforeend", mapManager.visitedCounties);
+    // document.getElementById("max-powiats").insertAdjacentText("beforeend", mapManager.counties.length);
 }
 
-function clickPowiat() {
-    if (currentPowiat !== null) {
-        removeAsideClass();
-        document.getElementById("aside-powiat").classList.add("aside-selected");
-        document.getElementById("aside-text").innerHTML = powiatElement;
-        document.getElementById("powiat-name").insertAdjacentText("beforeend", mapManager.counties[currentPowiat.i].name);
-        document.getElementById("powiat-state").insertAdjacentHTML("beforeend", powiatStates[mapManager.counties[currentPowiat.i].state]);
-        document.getElementById("button-powiat-visited").addEventListener("click", clickPowiatVisited);
-        document.getElementById("button-starting-powiat").addEventListener("click", clickStartingPowiat);
-        document.getElementById("button-powiat-unselect").addEventListener("click", clickPowiatUnselect);
-        document.getElementById("button-powiat-change").addEventListener("click", clickPowiatChange);
-        if (document.getElementById("visited-date")) {
-            document.getElementById("visited-date").insertAdjacentText("beforeend", intl.format(mapManager.counties[currentPowiat.i].date));
-            document.getElementById("visited-date").addEventListener("contextmenu", changeDate);
-        }
-    }
-}
+function clickPowiat() {}
 
 function changeDate(event) {
     event.preventDefault();
@@ -176,15 +135,6 @@ function clickSettings() {
         document.getElementById("settings-dark-mode").checked = true;
     }
     document.getElementById("settings-dark-mode").addEventListener("click", clickDarkMode);
-}
-
-function clickPowiatVisited() {
-    mapManager.counties[currentPowiat.i].state = 1;
-    mapManager.visitedCounties = mapManager.counties.filter((powiat) => powiat.state !== 0).length;
-    currentPowiat.classList.add("visited");
-    mapManager.counties[currentPowiat.i].date = new Date();
-    saveData();
-    clickPowiat();
 }
 
 function clickStartingPowiat() {
@@ -259,8 +209,6 @@ function clickDarkMode(event) {
 }
 
 function saveData() {
-    let jsonData = JSON.stringify(mapManager.counties, ["date", "state"]);
-    localStorage.setItem("counties", jsonData);
     localStorage.setItem("settings", JSON.stringify(settings));
 }
 
@@ -354,4 +302,4 @@ if (!mobile) {
 document.getElementById("map").addEventListener("wheel", scaleMap);
 
 getData();
-clickStats();
+// clickStats();
