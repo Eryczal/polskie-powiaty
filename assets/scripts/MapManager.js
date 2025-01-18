@@ -60,12 +60,12 @@ class MapManager {
         const statsData = {
             starting: this.counties.find((county) => county.state === 2)?.name || "Brak",
             first: {
-                name: firstCounty.name || "Brak",
-                date: firstCounty ? `(${this.intl.format(firstCounty.date)})` : "",
+                name: firstCounty?.name || "Brak",
+                date: firstCounty ? `(${this.intl.format(firstCounty?.date)})` : "",
             },
             last: {
-                name: lastCounty.name || "Brak",
-                date: lastCounty ? `(${this.intl.format(lastCounty.date)})` : "",
+                name: lastCounty?.name || "Brak",
+                date: lastCounty ? `(${this.intl.format(lastCounty?.date)})` : "",
             },
             visited: this.visitedCounties,
             maxVisited: this.counties.length,
