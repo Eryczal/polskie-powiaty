@@ -84,7 +84,11 @@ function clickStats(e) {
     // document.getElementById("max-powiats").insertAdjacentText("beforeend", mapManager.counties.length);
 }
 
-function clickPowiat() {}
+function clickPowiat(e) {
+    if (mapManager.selected) {
+        eventBus.emit("changePage", { page: "county", target: mapManager.selected });
+    }
+}
 
 function changeDate(event) {
     event.preventDefault();
