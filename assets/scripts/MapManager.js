@@ -22,8 +22,6 @@ class MapManager {
             this.counties[i].element.i = i;
         });
 
-        this.loadCounties();
-
         this.eventBus.on("getCountyData", (data) => this.getCountyData(data));
         this.eventBus.on("getStatsData", () => this.getStats());
         this.eventBus.on("clickCountyVisited", (data) => this.setCounty(data, 1));

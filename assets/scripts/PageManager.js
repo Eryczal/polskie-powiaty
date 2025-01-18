@@ -3,7 +3,7 @@ import { pages } from "./data/pages.js";
 class PageManager {
     constructor(eventBus) {
         this.eventBus = eventBus;
-        this.page = "";
+        this.page = null;
         this.activeEvents = [];
 
         this.eventBus.on("changePage", (data) => this.preparePageData(data));
@@ -11,6 +11,10 @@ class PageManager {
     }
 
     preparePageData({ page, target }) {
+        if (this.page) {
+            document.getElementById(`aside-${this.page}`).classList.remove("aside-selected");
+        }
+
         this.page = page;
 
         if (page === "county") {
@@ -21,9 +25,18 @@ class PageManager {
     }
 
     changePage(name, data) {
+        document.getElementById("aside-text").classList.remove("border-radius-first");
+        document.getElementById("aside-text").classList.remove("border-radius-last");
         this.removeEvents();
 
-        document.querySelector("#aside-text").innerHTML = pages[name].template(data);
+        if (name === "stats") {
+            document.getElementById("aside-text").classList.add("border-radius-first");
+        } else if (name === "settings") {
+            document.getElementById("aside-text").classList.add("border-radius-last");
+        }
+
+        document.getElementById(`aside-${name}`).classList.add("aside-selected");
+        document.getElementById("aside-text").innerHTML = pages[name].template(data);
 
         for (const [eventSelector, eventHandlers] of Object.entries(pages[name].events)) {
             const element = document.querySelector(eventSelector);

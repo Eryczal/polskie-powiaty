@@ -6,14 +6,14 @@ const eventBus = new EventBus();
 const mapManager = new MapManager(eventBus);
 const pageManager = new PageManager(eventBus);
 
-var currentPowiat = null;
+mapManager.loadCounties();
+
+eventBus.emit("changePage", { page: "stats" });
 
 var settings = {
     darkMode: false,
 };
 let mobile = window.innerWidth < 1100;
-
-var intl = new Intl.DateTimeFormat("pl-PL", { dateStyle: "long" });
 
 var asideButtons = document.getElementsByClassName("aside-button");
 
@@ -279,7 +279,7 @@ function scaleMap(event) {
 }
 
 document.getElementById("aside-stats").addEventListener("click", clickStats);
-document.getElementById("aside-powiat").addEventListener("click", clickPowiat);
+document.getElementById("aside-county").addEventListener("click", clickPowiat);
 document.getElementById("aside-save").addEventListener("click", clickSave);
 document.getElementById("aside-settings").addEventListener("click", clickSettings);
 if (!mobile) {
