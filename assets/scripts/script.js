@@ -1,16 +1,13 @@
-import powiats from "./powiats.js";
+import { MapManager } from "./MapManager.js";
 
-powiats.forEach((powiat, i) => {
-    powiat.name = powiat.name.charAt(0).toUpperCase() + powiat.name.slice(1);
-    powiat.date = null;
-    powiat.state = 0;
-    powiat.element = document.getElementsByTagName("path")[i];
-    powiat.element.addEventListener("click", clickMap);
-    powiat.element.i = i;
+const mapManager = new MapManager();
+
+mapManager.counties.forEach((county) => {
+    county.element.addEventListener("click", (e) => clickMap(e));
 });
 
 var currentPowiat = null;
-var visitedPowiats = powiats.filter((powiat) => powiat.state !== 0).length;
+var visitedPowiats = mapManager.counties.filter((powiat) => powiat.state !== 0).length;
 var powiatStates = [
     "Powiat nie został jeszcze przez ciebie odwiedzony.",
     'Powiat został przez ciebie odwiedzony <span id="visited-date"></span>.',
@@ -83,16 +80,16 @@ function removeAsideClass() {
 function clickStats() {
     removeAsideClass();
     document.getElementById("aside-text").classList.add("border-radius-first");
-    let startingPowiat = powiats.find((powiat) => powiat.state == 2)?.name ? powiats.find((powiat) => powiat.state == 2).name : "Brak";
+    let startingPowiat = mapManager.counties.find((powiat) => powiat.state == 2)?.name ? mapManager.counties.find((powiat) => powiat.state == 2).name : "Brak";
     let firstPowiat = null;
     let lastPowiat = null;
 
-    for (let i = 0; i < powiats.length; i++) {
-        if (Date.parse(powiats[i].date) != NaN) {
-            if (Date.parse(powiats[i].date) < (Date.parse(powiats[firstPowiat]?.date) || Number.POSITIVE_INFINITY)) {
+    for (let i = 0; i < mapManager.counties.length; i++) {
+        if (Date.parse(mapManager.counties[i].date) != NaN) {
+            if (Date.parse(mapManager.counties[i].date) < (Date.parse(mapManager.counties[firstPowiat]?.date) || Number.POSITIVE_INFINITY)) {
                 firstPowiat = i;
             }
-            if (Date.parse(powiats[i].date) > (Date.parse(powiats[lastPowiat]?.date) || Number.NEGATIVE_INFINITY)) {
+            if (Date.parse(mapManager.counties[i].date) > (Date.parse(mapManager.counties[lastPowiat]?.date) || Number.NEGATIVE_INFINITY)) {
                 lastPowiat = i;
             }
         }
@@ -104,11 +101,13 @@ function clickStats() {
     if (firstPowiat !== null) {
         document
             .getElementById("first-powiat")
-            .insertAdjacentText("beforeend", powiats[firstPowiat].name + " (" + intl.format(powiats[firstPowiat].date) + ")");
-        document.getElementById("last-powiat").insertAdjacentText("beforeend", powiats[lastPowiat].name + " (" + intl.format(powiats[lastPowiat].date) + ")");
+            .insertAdjacentText("beforeend", mapManager.counties[firstPowiat].name + " (" + intl.format(mapManager.counties[firstPowiat].date) + ")");
+        document
+            .getElementById("last-powiat")
+            .insertAdjacentText("beforeend", mapManager.counties[lastPowiat].name + " (" + intl.format(mapManager.counties[lastPowiat].date) + ")");
     }
     document.getElementById("visited-powiats").insertAdjacentText("beforeend", visitedPowiats);
-    document.getElementById("max-powiats").insertAdjacentText("beforeend", powiats.length);
+    document.getElementById("max-powiats").insertAdjacentText("beforeend", mapManager.counties.length);
 }
 
 function clickPowiat() {
@@ -116,14 +115,14 @@ function clickPowiat() {
         removeAsideClass();
         document.getElementById("aside-powiat").classList.add("aside-selected");
         document.getElementById("aside-text").innerHTML = powiatElement;
-        document.getElementById("powiat-name").insertAdjacentText("beforeend", powiats[currentPowiat.i].name);
-        document.getElementById("powiat-state").insertAdjacentHTML("beforeend", powiatStates[powiats[currentPowiat.i].state]);
+        document.getElementById("powiat-name").insertAdjacentText("beforeend", mapManager.counties[currentPowiat.i].name);
+        document.getElementById("powiat-state").insertAdjacentHTML("beforeend", powiatStates[mapManager.counties[currentPowiat.i].state]);
         document.getElementById("button-powiat-visited").addEventListener("click", clickPowiatVisited);
         document.getElementById("button-starting-powiat").addEventListener("click", clickStartingPowiat);
         document.getElementById("button-powiat-unselect").addEventListener("click", clickPowiatUnselect);
         document.getElementById("button-powiat-change").addEventListener("click", clickPowiatChange);
         if (document.getElementById("visited-date")) {
-            document.getElementById("visited-date").insertAdjacentText("beforeend", intl.format(powiats[currentPowiat.i].date));
+            document.getElementById("visited-date").insertAdjacentText("beforeend", intl.format(mapManager.counties[currentPowiat.i].date));
             document.getElementById("visited-date").addEventListener("contextmenu", changeDate);
         }
     }
@@ -132,21 +131,21 @@ function clickPowiat() {
 function changeDate(event) {
     event.preventDefault();
 
-    let d = powiats[currentPowiat.i].date;
+    let d = mapManager.counties[currentPowiat.i].date;
     let oldDate =
         (d.getDate() > 9 ? d.getDate() : "0" + d.getDate()) +
         "." +
         (d.getMonth() + 1 > 9 ? d.getMonth() + 1 : "0" + (d.getMonth() + 1)) +
         "." +
         d.getFullYear();
-    var newDate = prompt(`Podaj datę odwiedzenia (${powiats[currentPowiat.i].name})`, oldDate);
+    var newDate = prompt(`Podaj datę odwiedzenia (${mapManager.counties[currentPowiat.i].name})`, oldDate);
     if (newDate !== null) {
         newDate = newDate.split(".");
         if (newDate.length == 3) {
             if (parseInt(newDate[0]) <= 31 && parseInt(newDate[0]) > 0) {
                 if (parseInt(newDate[1]) > 0 && parseInt(newDate[1]) < 12) {
-                    powiats[currentPowiat.i].date = new Date(parseInt(newDate[2]), parseInt(newDate[1]) - 1, parseInt(newDate[0]));
-                    document.getElementById("visited-date").innerHTML = intl.format(powiats[currentPowiat.i].date);
+                    mapManager.counties[currentPowiat.i].date = new Date(parseInt(newDate[2]), parseInt(newDate[1]) - 1, parseInt(newDate[0]));
+                    document.getElementById("visited-date").innerHTML = intl.format(mapManager.counties[currentPowiat.i].date);
                     saveData();
                 } else {
                     alert("Zła data.");
@@ -181,18 +180,18 @@ function clickSettings() {
 }
 
 function clickPowiatVisited() {
-    powiats[currentPowiat.i].state = 1;
-    visitedPowiats = powiats.filter((powiat) => powiat.state !== 0).length;
+    mapManager.counties[currentPowiat.i].state = 1;
+    visitedPowiats = mapManager.counties.filter((powiat) => powiat.state !== 0).length;
     currentPowiat.classList.add("visited");
-    powiats[currentPowiat.i].date = new Date();
+    mapManager.counties[currentPowiat.i].date = new Date();
     saveData();
     clickPowiat();
 }
 
 function clickStartingPowiat() {
-    if (!powiats.some((powiat) => powiat.state == 2)) {
-        powiats[currentPowiat.i].state = 2;
-        visitedPowiats = powiats.filter((powiat) => powiat.state !== 0).length;
+    if (!mapManager.counties.some((powiat) => powiat.state == 2)) {
+        mapManager.counties[currentPowiat.i].state = 2;
+        visitedPowiats = mapManager.counties.filter((powiat) => powiat.state !== 0).length;
         currentPowiat.classList.add("starting");
         saveData();
         clickPowiat();
@@ -206,25 +205,25 @@ function clickPowiatUnselect() {
 }
 
 function clickPowiatChange() {
-    powiats[currentPowiat.i].state = 0;
-    visitedPowiats = powiats.filter((powiat) => powiat.state !== 0).length;
+    mapManager.counties[currentPowiat.i].state = 0;
+    visitedPowiats = mapManager.counties.filter((powiat) => powiat.state !== 0).length;
     currentPowiat.classList.remove("visited");
     currentPowiat.classList.remove("starting");
-    powiats[currentPowiat.i].date = null;
+    mapManager.counties[currentPowiat.i].date = null;
     saveData();
     clickPowiat();
 }
 
 function clickSaveExport() {
     if (document.getElementById("import-export-text")) {
-        document.getElementById("import-export-text").value = JSON.stringify(powiats, ["date", "state"]);
+        document.getElementById("import-export-text").value = JSON.stringify(mapManager.counties, ["date", "state"]);
         if (document.getElementById("accept-import")) {
             document.getElementById("accept-import").remove();
         }
     } else {
         document
             .getElementById("aside-text")
-            .insertAdjacentHTML("beforeend", `<textarea id="import-export-text">${JSON.stringify(powiats, ["date", "state"])}</textarea>`);
+            .insertAdjacentHTML("beforeend", `<textarea id="import-export-text">${JSON.stringify(mapManager.counties, ["date", "state"])}</textarea>`);
     }
 }
 
@@ -261,19 +260,19 @@ function clickDarkMode(event) {
 }
 
 function saveData() {
-    let jsonData = JSON.stringify(powiats, ["date", "state"]);
-    localStorage.setItem("powiats", jsonData);
+    let jsonData = JSON.stringify(mapManager.counties, ["date", "state"]);
+    localStorage.setItem("counties", jsonData);
     localStorage.setItem("settings", JSON.stringify(settings));
 }
 
 function getData() {
-    if (localStorage.getItem("powiats") !== null) {
-        let jsonData = JSON.parse(localStorage.getItem("powiats"), (key, value) => (key == "date" && value !== null ? new Date(value) : value));
-        for (let i = 0; i < powiats.length; i++) {
-            powiats[i].date = jsonData[i].date;
-            powiats[i].state = jsonData[i].state;
-            if (powiats[i].state !== 0) {
-                powiats[i].element.classList.add(powiats[i].state == 1 ? "visited" : "starting");
+    if (localStorage.getItem("counties") !== null) {
+        let jsonData = JSON.parse(localStorage.getItem("counties"), (key, value) => (key == "date" && value !== null ? new Date(value) : value));
+        for (let i = 0; i < mapManager.counties.length; i++) {
+            mapManager.counties[i].date = jsonData[i].date;
+            mapManager.counties[i].state = jsonData[i].state;
+            if (mapManager.counties[i].state !== 0) {
+                mapManager.counties[i].element.classList.add(mapManager.counties[i].state == 1 ? "visited" : "starting");
                 visitedPowiats++;
             }
         }
@@ -287,18 +286,18 @@ function getData() {
 }
 
 function removeData() {
-    localStorage.removeItem("powiats");
+    localStorage.removeItem("counties");
     localStorage.removeItem("settings");
 }
 
 function importData() {
     let importData = JSON.parse(document.getElementById("import-export-text").value);
     if (importData.length == 380) {
-        for (let i = 0; i < powiats.length; i++) {
-            powiats[i].date = importData[i].date;
-            powiats[i].state = importData[i].state;
-            if (powiats[i].state !== 0) {
-                powiats[i].element.classList.add(powiats[i].state == 1 ? "visited" : "starting");
+        for (let i = 0; i < mapManager.counties.length; i++) {
+            mapManager.counties[i].date = importData[i].date;
+            mapManager.counties[i].state = importData[i].state;
+            if (mapManager.counties[i].state !== 0) {
+                mapManager.counties[i].element.classList.add(mapManager.counties[i].state == 1 ? "visited" : "starting");
                 visitedPowiats++;
             }
         }
