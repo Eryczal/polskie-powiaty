@@ -17,30 +17,10 @@ let mobile = window.innerWidth < 1100;
 
 var asideButtons = document.getElementsByClassName("aside-button");
 
-var saveElement = `
-    <h1>Zapis</h1>
-    <p>Dane są zapisywane automatycznie w tej przeglądarce.</p>
-    <p>Poniższego zapisu używaj tylko wtedy, gdy dane chcesz przenieść do innej przeglądarki.</p>
-    <div class="save-buttons">
-        <div class="save-button" id="button-save-export">Eksportuj</div>
-        <div class="save-button" id="button-save-import">Importuj</div>
-        <div class="save-button" id="button-save-reset">Resetuj</div>
-    </div>
-`;
-
 var settingsElement = `
     <h1>Ustawienia</h1>
     <p><input id="settings-dark-mode" type="checkbox"> Ciemny motyw</p>
 `;
-
-function clickMap(e) {
-    if (currentPowiat !== null) {
-        currentPowiat.classList.remove("selected");
-    }
-    currentPowiat = e.currentTarget;
-    currentPowiat.classList.add("selected");
-    eventBus.emit("changePage", { page: "county", target: e.currentTarget });
-}
 
 function removeAsideClass() {
     for (let i = 0; i < asideButtons.length; i++) {
@@ -52,36 +32,6 @@ function removeAsideClass() {
 
 function clickStats(e) {
     eventBus.emit("changePage", { page: "stats", target: e.currentTarget });
-    // removeAsideClass();
-    // document.getElementById("aside-text").classList.add("border-radius-first");
-    // let startingPowiat = mapManager.counties.find((powiat) => powiat.state == 2)?.name ? mapManager.counties.find((powiat) => powiat.state == 2).name : "Brak";
-    // let firstPowiat = null;
-    // let lastPowiat = null;
-
-    // for (let i = 0; i < mapManager.counties.length; i++) {
-    //     if (Date.parse(mapManager.counties[i].date) != NaN) {
-    //         if (Date.parse(mapManager.counties[i].date) < (Date.parse(mapManager.counties[firstPowiat]?.date) || Number.POSITIVE_INFINITY)) {
-    //             firstPowiat = i;
-    //         }
-    //         if (Date.parse(mapManager.counties[i].date) > (Date.parse(mapManager.counties[lastPowiat]?.date) || Number.NEGATIVE_INFINITY)) {
-    //             lastPowiat = i;
-    //         }
-    //     }
-    // }
-
-    // document.getElementById("aside-stats").classList.add("aside-selected");
-    // document.getElementById("aside-text").innerHTML = statsElement;
-    // document.getElementById("starting-powiat").insertAdjacentText("beforeend", startingPowiat);
-    // if (firstPowiat !== null) {
-    //     document
-    //         .getElementById("first-powiat")
-    //         .insertAdjacentText("beforeend", mapManager.counties[firstPowiat].name + " (" + intl.format(mapManager.counties[firstPowiat].date) + ")");
-    //     document
-    //         .getElementById("last-powiat")
-    //         .insertAdjacentText("beforeend", mapManager.counties[lastPowiat].name + " (" + intl.format(mapManager.counties[lastPowiat].date) + ")");
-    // }
-    // document.getElementById("visited-powiats").insertAdjacentText("beforeend", mapManager.visitedCounties);
-    // document.getElementById("max-powiats").insertAdjacentText("beforeend", mapManager.counties.length);
 }
 
 function clickPowiat(e) {
@@ -122,12 +72,7 @@ function changeDate(event) {
 }
 
 function clickSave() {
-    removeAsideClass();
-    document.getElementById("aside-save").classList.add("aside-selected");
-    document.getElementById("aside-text").innerHTML = saveElement;
-    document.getElementById("button-save-export").addEventListener("click", clickSaveExport);
-    document.getElementById("button-save-import").addEventListener("click", clickSaveImport);
-    document.getElementById("button-save-reset").addEventListener("click", clickSaveReset);
+    eventBus.emit("changePage", { page: "save" });
 }
 
 function clickSettings() {
@@ -140,67 +85,6 @@ function clickSettings() {
     }
     document.getElementById("settings-dark-mode").addEventListener("click", clickDarkMode);
 }
-
-function clickStartingPowiat() {
-    if (!mapManager.counties.some((powiat) => powiat.state == 2)) {
-        mapManager.counties[currentPowiat.i].state = 2;
-        mapManager.visitedCounties = mapManager.counties.filter((powiat) => powiat.state !== 0).length;
-        currentPowiat.classList.add("starting");
-        saveData();
-        clickPowiat();
-    }
-}
-
-function clickPowiatUnselect() {
-    currentPowiat.classList.remove("selected");
-    currentPowiat = null;
-    clickStats();
-}
-
-function clickPowiatChange() {
-    mapManager.counties[currentPowiat.i].state = 0;
-    mapManager.visitedCounties = mapManager.counties.filter((powiat) => powiat.state !== 0).length;
-    currentPowiat.classList.remove("visited");
-    currentPowiat.classList.remove("starting");
-    mapManager.counties[currentPowiat.i].date = null;
-    saveData();
-    clickPowiat();
-}
-
-function clickSaveExport() {
-    if (document.getElementById("import-export-text")) {
-        document.getElementById("import-export-text").value = JSON.stringify(mapManager.counties, ["date", "state"]);
-        if (document.getElementById("accept-import")) {
-            document.getElementById("accept-import").remove();
-        }
-    } else {
-        document
-            .getElementById("aside-text")
-            .insertAdjacentHTML("beforeend", `<textarea id="import-export-text">${JSON.stringify(mapManager.counties, ["date", "state"])}</textarea>`);
-    }
-}
-
-function clickSaveImport() {
-    if (document.getElementById("import-export-text")) {
-        document.getElementById("import-export-text").value = "";
-    } else {
-        document.getElementById("aside-text").insertAdjacentHTML("beforeend", `<textarea id="import-export-text"></textarea>`);
-    }
-    if (!document.getElementById("accept-import")) {
-        document
-            .getElementById("aside-text")
-            .insertAdjacentHTML("beforeend", `<div><div class="save-button" id="accept-import" style="display: inline-block; margin: 0">Zatwierdź</div></div>`);
-        document.getElementById("accept-import").addEventListener("click", importData);
-    }
-}
-
-function clickSaveReset() {
-    if (confirm("Wszystkie dane z przeglądarki zostaną usunięte")) {
-        removeData();
-        location.reload();
-    }
-}
-
 function clickDarkMode(event) {
     if (!document.getElementsByTagName("body")[0].classList.contains("dark-mode") && event.currentTarget.checked) {
         document.getElementsByTagName("body")[0].classList.add("dark-mode");
@@ -228,23 +112,6 @@ function getData() {
 function removeData() {
     localStorage.removeItem("counties");
     localStorage.removeItem("settings");
-}
-
-function importData() {
-    let importData = JSON.parse(document.getElementById("import-export-text").value);
-    if (importData.length == 380) {
-        for (let i = 0; i < mapManager.counties.length; i++) {
-            mapManager.counties[i].date = importData[i].date;
-            mapManager.counties[i].state = importData[i].state;
-            if (mapManager.counties[i].state !== 0) {
-                mapManager.counties[i].element.classList.add(mapManager.counties[i].state == 1 ? "visited" : "starting");
-                mapManager.visitedCounties++;
-            }
-        }
-        saveData();
-    } else {
-        alert("Wprowadzone dane są niepoprawne.");
-    }
 }
 
 let viewBox = { x: 0, y: 0, width: 800, height: 744 };

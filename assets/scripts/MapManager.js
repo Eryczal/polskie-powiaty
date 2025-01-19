@@ -24,6 +24,9 @@ class MapManager {
 
         this.eventBus.on("getCountyData", (data) => this.getCountyData(data));
         this.eventBus.on("getStatsData", () => this.getStats());
+        this.eventBus.on("getExportData", () => this.getExportData());
+        this.eventBus.on("importData", (data) => this.importData(data));
+        this.eventBus.on("resetData", () => this.resetData());
         this.eventBus.on("clickCountyVisited", (data) => this.setCounty(data, 1));
         this.eventBus.on("clickCountyStarting", (data) => this.setCounty(data, 2));
         this.eventBus.on("clickCountyUnselect", () => this.unselectCounty());
@@ -72,6 +75,44 @@ class MapManager {
         };
 
         this.eventBus.emit("pageData", statsData);
+    }
+
+    getExportData() {
+        this.eventBus.emit("exportData", { json: JSON.stringify(this.counties, ["date", "state"]) });
+    }
+
+    importData(data) {
+        let jsonData;
+
+        try {
+            jsonData = JSON.parse(data);
+        } catch (e) {
+            alert("Dane niepoprawne");
+            return;
+        }
+
+        if (jsonData.length !== this.counties.length) {
+            alert("Dane niepoprawne");
+            return;
+        }
+
+        this.visitedCounties = 0;
+
+        jsonData.forEach((county, i) => {
+            this.counties[i].date = county.date === null ? null : new Date(county.date);
+            this.counties[i].state = county.state;
+
+            if (county.state === 0) {
+                this.counties[i].element.classList.remove("visited");
+                this.counties[i].element.classList.remove("starting");
+                return;
+            }
+
+            this.counties[i].element.classList.add(county.state === 1 ? "visited" : "starting");
+            this.visitedCounties++;
+        });
+
+        this.saveCounties();
     }
 
     getCountyData({ target }) {
@@ -139,6 +180,11 @@ class MapManager {
         ];
 
         return states[county.state];
+    }
+
+    resetData() {
+        localStorage.removeItem("counties");
+        location.reload();
     }
 
     saveCounties() {

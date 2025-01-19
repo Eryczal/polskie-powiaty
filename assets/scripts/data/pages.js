@@ -49,6 +49,38 @@ const pages = {
             ],
         },
     },
+    save: {
+        template: () => `
+            <h1>Zapis</h1>
+            <p>Dane są zapisywane automatycznie w tej przeglądarce.</p>
+            <p>Poniższego zapisu używaj tylko wtedy, gdy dane chcesz przenieść do innej przeglądarki.</p>
+            <div class="save-buttons">
+                <div class="save-button" id="button-save-export">Eksportuj</div>
+                <div class="save-button" id="button-save-import">Importuj</div>
+                <div class="save-button" id="button-save-reset">Resetuj</div>
+            </div>
+        `,
+        events: {
+            "#button-save-export": [
+                {
+                    type: "click",
+                    handler: "clickSaveExport",
+                },
+            ],
+            "#button-save-import": [
+                {
+                    type: "click",
+                    handler: "clickSaveImport",
+                },
+            ],
+            "#button-save-reset": [
+                {
+                    type: "click",
+                    handler: "clickSaveReset",
+                },
+            ],
+        },
+    },
 };
 
 export { pages };

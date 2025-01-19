@@ -8,6 +8,10 @@ class PageManager {
 
         this.eventBus.on("changePage", (data) => this.preparePageData(data));
         this.eventBus.on("pageData", (data) => this.changePage(this.page, data));
+        this.eventBus.on("clickSaveExport", () => this.prepareExportData());
+        this.eventBus.on("clickSaveImport", () => this.showImport());
+        this.eventBus.on("clickSaveReset", () => this.resetData());
+        this.eventBus.on("exportData", (data) => this.showExport(data));
     }
 
     preparePageData({ page, target }) {
@@ -21,6 +25,8 @@ class PageManager {
             this.eventBus.emit("getCountyData", { target });
         } else if (page === "stats") {
             this.eventBus.emit("getStatsData");
+        } else {
+            this.changePage(page);
         }
     }
 
@@ -43,12 +49,64 @@ class PageManager {
 
             if (element) {
                 eventHandlers.forEach(({ type, handler }) => {
-                    const funcHandler = () => this.eventBus.emit(handler, { id: data.id });
+                    const funcHandler = () => this.eventBus.emit(handler, { id: data?.id || "" });
 
                     element.addEventListener(type, funcHandler);
 
                     this.activeEvents.push({ element, type, funcHandler });
                 });
+            }
+        }
+    }
+
+    prepareExportData() {
+        this.eventBus.emit("getExportData");
+    }
+
+    showExport(data) {
+        if (this.page === "save") {
+            const textarea = document.getElementById("import-export-text");
+            const importButton = document.getElementById("accept-import");
+
+            if (importButton) {
+                importButton.remove();
+            }
+
+            if (textarea) {
+                textarea.value = data.json;
+            } else {
+                document.getElementById("aside-text").insertAdjacentHTML("beforeend", `<textarea id="import-export-text">${data.json}</textarea>`);
+            }
+        }
+    }
+
+    acceptImport() {
+        const textarea = document.getElementById("import-export-text");
+
+        if (textarea) {
+            this.eventBus.emit("importData", textarea.value);
+        }
+    }
+
+    showImport() {
+        if (this.page === "save") {
+            const textarea = document.getElementById("import-export-text");
+            const importButton = document.getElementById("accept-import");
+
+            if (textarea) {
+                textarea.value = "";
+            } else {
+                document.getElementById("aside-text").insertAdjacentHTML("beforeend", `<textarea id="import-export-text"></textarea>`);
+            }
+
+            if (!importButton) {
+                document
+                    .getElementById("aside-text")
+                    .insertAdjacentHTML(
+                        "beforeend",
+                        `<div><div class="save-button" id="accept-import" style="display: inline-block; margin: 0">Zatwierdź</div></div>`
+                    );
+                document.getElementById("accept-import").addEventListener("click", () => this.acceptImport());
             }
         }
     }
@@ -59,6 +117,12 @@ class PageManager {
         });
 
         this.activeEvents = [];
+    }
+
+    resetData() {
+        if (confirm("Wszystkie dane z przeglądarki zostaną usunięte")) {
+            this.eventBus.emit("resetData");
+        }
     }
 }
 
