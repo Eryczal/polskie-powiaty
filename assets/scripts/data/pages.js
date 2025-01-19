@@ -12,9 +12,9 @@ const pages = {
         events: {},
     },
     county: {
-        template: ({ name, state }) => `
+        template: ({ name, state, icon }) => `
             <h1 id="powiat-name">${name}</h1>
-            <p id="powiat-state">${state}</p>
+            <p id="powiat-state">${state} ${icon}</p>
             <div class="powiat-buttons">
                 <div class="powiat-button" id="button-county-visited">Oznacz jako odwiedzony</div>
                 <div class="powiat-button" id="button-starting-county">Oznacz jako początkowy</div>
@@ -45,6 +45,12 @@ const pages = {
                 {
                     type: "click",
                     handler: "clickCountyUnvisited",
+                },
+            ],
+            "#edit-date": [
+                {
+                    type: "click",
+                    handler: "editCountyDate",
                 },
             ],
         },

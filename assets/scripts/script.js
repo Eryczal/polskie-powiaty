@@ -11,38 +11,6 @@ pageManager.initEvents();
 
 eventBus.emit("changePage", { page: "stats" });
 
-let mobile = window.innerWidth < 1100;
-
-function changeDate(event) {
-    event.preventDefault();
-
-    let d = mapManager.counties[currentPowiat.i].date;
-    let oldDate =
-        (d.getDate() > 9 ? d.getDate() : "0" + d.getDate()) +
-        "." +
-        (d.getMonth() + 1 > 9 ? d.getMonth() + 1 : "0" + (d.getMonth() + 1)) +
-        "." +
-        d.getFullYear();
-    var newDate = prompt(`Podaj datę odwiedzenia (${mapManager.counties[currentPowiat.i].name})`, oldDate);
-    if (newDate !== null) {
-        newDate = newDate.split(".");
-        if (newDate.length == 3) {
-            if (parseInt(newDate[0]) <= 31 && parseInt(newDate[0]) > 0) {
-                if (parseInt(newDate[1]) > 0 && parseInt(newDate[1]) < 12) {
-                    mapManager.counties[currentPowiat.i].date = new Date(parseInt(newDate[2]), parseInt(newDate[1]) - 1, parseInt(newDate[0]));
-                    document.getElementById("visited-date").innerHTML = intl.format(mapManager.counties[currentPowiat.i].date);
-                    saveData();
-                } else {
-                    alert("Zła data.");
-                }
-            } else {
-                alert("Zła data.");
-            }
-        } else {
-            alert("Zła data.");
-        }
-    }
-}
 let viewBox = { x: 0, y: 0, width: 800, height: 744 };
 
 function scaleMap(event) {

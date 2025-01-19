@@ -31,6 +31,7 @@ class MapManager {
         this.eventBus.on("clickCountyStarting", (data) => this.setCounty(data, 2));
         this.eventBus.on("clickCountyUnselect", () => this.unselectCounty());
         this.eventBus.on("clickCountyUnvisited", (data) => this.unsetCounty(data));
+        this.eventBus.on("editCountyDate", () => this.editCountyDate());
     }
 
     selectCounty(e) {
@@ -115,6 +116,38 @@ class MapManager {
         this.saveCounties();
     }
 
+    editCountyDate() {
+        if (!this.selected) {
+            return;
+        }
+
+        const d = this.counties[this.selected.i].date;
+        const oldDate = `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
+        let newDate = prompt(`Podaj datę odwiedzenia (${this.counties[this.selected.i].name})`, oldDate);
+
+        if (newDate === null) {
+            return;
+        }
+
+        newDate = newDate.split(".");
+
+        if (newDate.length !== 3) {
+            return;
+        }
+
+        if (parseInt(newDate[0]) < 1 || parseInt(newDate[0]) > 31) {
+            return;
+        }
+
+        if (parseInt(newDate[1]) < 1 || parseInt(newDate[1]) > 12) {
+            return;
+        }
+
+        this.counties[this.selected.i].date = new Date(parseInt(newDate[2]), parseInt(newDate[1]) - 1, parseInt(newDate[0]));
+        document.getElementById("visited-date").innerHTML = this.intl.format(this.counties[this.selected.i].date);
+        this.saveCounties();
+    }
+
     getCountyData({ target }) {
         target = target || this.selected;
 
@@ -127,6 +160,7 @@ class MapManager {
             id: target.i,
             name: this.counties[target.i].name,
             state: this.displayCountyState(target.i),
+            icon: this.counties[target.i].state === 1 ? `<div id="edit-date"><span class="iconify iconify-inline" data-icon="mdi:pencil"></span></div>` : "",
         };
 
         this.eventBus.emit("pageData", countyData);
