@@ -81,6 +81,20 @@ const pages = {
             ],
         },
     },
+    settings: {
+        template: ({ darkMode }) => `
+            <h1>Ustawienia</h1>
+            <label><input id="settings-dark-mode" type="checkbox" ${darkMode ? "checked" : ""}> Ciemny motyw</label>
+        `,
+        events: {
+            "#settings-dark-mode": [
+                {
+                    type: "change",
+                    handler: "clickChangeMode",
+                },
+            ],
+        },
+    },
 };
 
 export { pages };

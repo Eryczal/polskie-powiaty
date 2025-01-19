@@ -3,6 +3,7 @@ import { pages } from "./data/pages.js";
 class PageManager {
     constructor(eventBus) {
         this.eventBus = eventBus;
+        this.darkMode = false;
         this.page = null;
         this.activeEvents = [];
 
@@ -12,6 +13,9 @@ class PageManager {
         this.eventBus.on("clickSaveImport", () => this.showImport());
         this.eventBus.on("clickSaveReset", () => this.resetData());
         this.eventBus.on("exportData", (data) => this.showExport(data));
+        this.eventBus.on("clickChangeMode", () => this.changeMode());
+
+        this.loadDarkMode();
     }
 
     preparePageData({ page, target }) {
@@ -30,7 +34,7 @@ class PageManager {
         }
     }
 
-    changePage(name, data) {
+    changePage(name, data = {}) {
         document.getElementById("aside-text").classList.remove("border-radius-first");
         document.getElementById("aside-text").classList.remove("border-radius-last");
         this.removeEvents();
@@ -39,6 +43,7 @@ class PageManager {
             document.getElementById("aside-text").classList.add("border-radius-first");
         } else if (name === "settings") {
             document.getElementById("aside-text").classList.add("border-radius-last");
+            data.darkMode = this.darkMode;
         }
 
         document.getElementById(`aside-${name}`).classList.add("aside-selected");
@@ -119,8 +124,44 @@ class PageManager {
         this.activeEvents = [];
     }
 
+    changeMode() {
+        const checkbox = document.getElementById("settings-dark-mode");
+
+        if (checkbox) {
+            this.setDarkMode(checkbox.checked);
+        }
+    }
+
+    loadDarkMode() {
+        const darkMode = JSON.parse(localStorage.getItem("darkMode"));
+
+        if (darkMode) {
+            this.setDarkMode(true);
+        }
+    }
+
+    setDarkMode(val) {
+        this.darkMode = val;
+        localStorage.setItem("darkMode", val);
+
+        if (this.darkMode) {
+            document.getElementsByTagName("body")[0].classList.add("dark-mode");
+        } else {
+            document.getElementsByTagName("body")[0].classList.remove("dark-mode");
+        }
+    }
+
+    getDarkMode() {
+        const darkMode = localStorage.getItem("darkMode");
+
+        if (darkMode === true) {
+            this.setDarkMode(true);
+        }
+    }
+
     resetData() {
         if (confirm("Wszystkie dane z przeglądarki zostaną usunięte")) {
+            localStorage.removeItem("darkMode");
             this.eventBus.emit("resetData");
         }
     }

@@ -10,25 +10,9 @@ mapManager.loadCounties();
 
 eventBus.emit("changePage", { page: "stats" });
 
-var settings = {
-    darkMode: false,
-};
 let mobile = window.innerWidth < 1100;
 
 var asideButtons = document.getElementsByClassName("aside-button");
-
-var settingsElement = `
-    <h1>Ustawienia</h1>
-    <p><input id="settings-dark-mode" type="checkbox"> Ciemny motyw</p>
-`;
-
-function removeAsideClass() {
-    for (let i = 0; i < asideButtons.length; i++) {
-        asideButtons[i].classList.remove("aside-selected");
-    }
-    document.getElementById("aside-text").classList.remove("border-radius-first");
-    document.getElementById("aside-text").classList.remove("border-radius-last");
-}
 
 function clickStats(e) {
     eventBus.emit("changePage", { page: "stats", target: e.currentTarget });
@@ -76,42 +60,7 @@ function clickSave() {
 }
 
 function clickSettings() {
-    removeAsideClass();
-    document.getElementById("aside-text").classList.add("border-radius-last");
-    document.getElementById("aside-settings").classList.add("aside-selected");
-    document.getElementById("aside-text").innerHTML = settingsElement;
-    if (document.getElementsByTagName("body")[0].classList.contains("dark-mode")) {
-        document.getElementById("settings-dark-mode").checked = true;
-    }
-    document.getElementById("settings-dark-mode").addEventListener("click", clickDarkMode);
-}
-function clickDarkMode(event) {
-    if (!document.getElementsByTagName("body")[0].classList.contains("dark-mode") && event.currentTarget.checked) {
-        document.getElementsByTagName("body")[0].classList.add("dark-mode");
-        settings.darkMode = true;
-    } else {
-        document.getElementsByTagName("body")[0].classList.remove("dark-mode");
-        settings.darkMode = false;
-    }
-    saveData();
-}
-
-function saveData() {
-    localStorage.setItem("settings", JSON.stringify(settings));
-}
-
-function getData() {
-    if (localStorage.getItem("settings") !== null) {
-        settings = JSON.parse(localStorage.getItem("settings"));
-        if (settings.darkMode) {
-            document.getElementsByTagName("body")[0].classList.add("dark-mode");
-        }
-    }
-}
-
-function removeData() {
-    localStorage.removeItem("counties");
-    localStorage.removeItem("settings");
+    eventBus.emit("changePage", { page: "settings" });
 }
 
 let viewBox = { x: 0, y: 0, width: 800, height: 744 };
@@ -153,24 +102,21 @@ document.getElementById("aside-stats").addEventListener("click", clickStats);
 document.getElementById("aside-county").addEventListener("click", clickPowiat);
 document.getElementById("aside-save").addEventListener("click", clickSave);
 document.getElementById("aside-settings").addEventListener("click", clickSettings);
-if (!mobile) {
-    document.getElementById("aside-stats").addEventListener("mouseover", () => document.getElementById("aside-text").classList.add("border-radius-first"));
-    document
-        .getElementById("aside-stats")
-        .addEventListener(
-            "mouseleave",
-            () => !document.getElementById("starting-powiat") && document.getElementById("aside-text").classList.remove("border-radius-first")
-        );
-    document.getElementById("aside-settings").addEventListener("mouseover", () => document.getElementById("aside-text").classList.add("border-radius-last"));
-    document
-        .getElementById("aside-settings")
-        .addEventListener(
-            "mouseleave",
-            () => !document.getElementById("dark-mode") && document.getElementById("aside-text").classList.remove("border-radius-last")
-        );
-}
+// if (!mobile) {
+//     document.getElementById("aside-stats").addEventListener("mouseover", () => document.getElementById("aside-text").classList.add("border-radius-first"));
+//     document
+//         .getElementById("aside-stats")
+//         .addEventListener(
+//             "mouseleave",
+//             () => !document.getElementById("starting-powiat") && document.getElementById("aside-text").classList.remove("border-radius-first")
+//         );
+//     document.getElementById("aside-settings").addEventListener("mouseover", () => document.getElementById("aside-text").classList.add("border-radius-last"));
+//     document
+//         .getElementById("aside-settings")
+//         .addEventListener(
+//             "mouseleave",
+//             () => !document.getElementById("dark-mode") && document.getElementById("aside-text").classList.remove("border-radius-last")
+//         );
+// }
 
 document.getElementById("map").addEventListener("wheel", scaleMap);
-
-getData();
-// clickStats();
