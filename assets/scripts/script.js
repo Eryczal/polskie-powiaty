@@ -7,10 +7,9 @@ const mapManager = new MapManager(eventBus);
 const pageManager = new PageManager(eventBus);
 
 mapManager.loadCounties();
+pageManager.initEvents();
 
 eventBus.emit("changePage", { page: "stats" });
-
-pageManager.initEvents();
 
 let mobile = window.innerWidth < 1100;
 
@@ -78,22 +77,5 @@ function scaleMap(event) {
 
     map.setAttribute("viewBox", `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
 }
-
-// if (!mobile) {
-//     document.getElementById("aside-stats").addEventListener("mouseover", () => document.getElementById("aside-text").classList.add("border-radius-first"));
-//     document
-//         .getElementById("aside-stats")
-//         .addEventListener(
-//             "mouseleave",
-//             () => !document.getElementById("starting-powiat") && document.getElementById("aside-text").classList.remove("border-radius-first")
-//         );
-//     document.getElementById("aside-settings").addEventListener("mouseover", () => document.getElementById("aside-text").classList.add("border-radius-last"));
-//     document
-//         .getElementById("aside-settings")
-//         .addEventListener(
-//             "mouseleave",
-//             () => !document.getElementById("dark-mode") && document.getElementById("aside-text").classList.remove("border-radius-last")
-//         );
-// }
 
 document.getElementById("map").addEventListener("wheel", scaleMap);

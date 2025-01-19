@@ -7,7 +7,8 @@ class PageManager {
         this.oldPage = null;
         this.page = null;
         this.activeEvents = [];
-        this.mobile = this.eventBus.on("changePage", (data) => this.preparePageData(data));
+        this.mobile = "maxTouchPoints" in navigator && navigator.maxTouchPoints > 0;
+        this.eventBus.on("changePage", (data) => this.preparePageData(data));
         this.eventBus.on("pageData", (data) => this.changePage(this.page, data));
         this.eventBus.on("clickSaveExport", () => this.prepareExportData());
         this.eventBus.on("clickSaveImport", () => this.showImport());
@@ -141,6 +142,17 @@ class PageManager {
         document.getElementById("aside-county").addEventListener("click", () => this.eventBus.emit("changePage", { page: "county" }));
         document.getElementById("aside-save").addEventListener("click", () => this.eventBus.emit("changePage", { page: "save" }));
         document.getElementById("aside-settings").addEventListener("click", () => this.eventBus.emit("changePage", { page: "settings" }));
+
+        if (!this.mobile) {
+            const asideText = document.getElementById("aside-text");
+            const asideStats = document.getElementById("aside-stats");
+            const asideSettings = document.getElementById("aside-settings");
+
+            asideStats.addEventListener("mouseover", () => asideText.classList.add("border-radius-first"));
+            asideStats.addEventListener("mouseleave", () => this.page !== "stats" && asideText.classList.remove("border-radius-first"));
+            asideSettings.addEventListener("mouseover", () => asideText.classList.add("border-radius-last"));
+            asideSettings.addEventListener("mouseleave", () => this.page !== "settings" && asideText.classList.remove("border-radius-last"));
+        }
     }
 
     changeMode() {
