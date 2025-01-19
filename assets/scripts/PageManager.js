@@ -4,10 +4,10 @@ class PageManager {
     constructor(eventBus) {
         this.eventBus = eventBus;
         this.darkMode = false;
+        this.oldPage = null;
         this.page = null;
         this.activeEvents = [];
-
-        this.eventBus.on("changePage", (data) => this.preparePageData(data));
+        this.mobile = this.eventBus.on("changePage", (data) => this.preparePageData(data));
         this.eventBus.on("pageData", (data) => this.changePage(this.page, data));
         this.eventBus.on("clickSaveExport", () => this.prepareExportData());
         this.eventBus.on("clickSaveImport", () => this.showImport());
@@ -18,11 +18,12 @@ class PageManager {
         this.loadDarkMode();
     }
 
-    preparePageData({ page, target }) {
+    preparePageData({ page, target = null }) {
         if (this.page) {
             document.getElementById(`aside-${this.page}`).classList.remove("aside-selected");
         }
 
+        this.oldPage = this.page;
         this.page = page;
 
         if (page === "county") {
@@ -35,6 +36,17 @@ class PageManager {
     }
 
     changePage(name, data = {}) {
+        if (data === null) {
+            if (this.oldPage !== null) {
+                this.page = this.oldPage;
+                this.oldPage = null;
+                document.getElementById(`aside-${this.page}`).classList.add("aside-selected");
+            } else {
+                this.eventBus.emit("changePage", { page: "stats" });
+            }
+            return;
+        }
+
         document.getElementById("aside-text").classList.remove("border-radius-first");
         document.getElementById("aside-text").classList.remove("border-radius-last");
         this.removeEvents();
@@ -122,6 +134,13 @@ class PageManager {
         });
 
         this.activeEvents = [];
+    }
+
+    initEvents() {
+        document.getElementById("aside-stats").addEventListener("click", () => this.eventBus.emit("changePage", { page: "stats" }));
+        document.getElementById("aside-county").addEventListener("click", () => this.eventBus.emit("changePage", { page: "county" }));
+        document.getElementById("aside-save").addEventListener("click", () => this.eventBus.emit("changePage", { page: "save" }));
+        document.getElementById("aside-settings").addEventListener("click", () => this.eventBus.emit("changePage", { page: "settings" }));
     }
 
     changeMode() {

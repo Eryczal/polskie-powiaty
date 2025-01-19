@@ -116,6 +116,13 @@ class MapManager {
     }
 
     getCountyData({ target }) {
+        target = target || this.selected;
+
+        if (target === null) {
+            this.eventBus.emit("pageData", null);
+            return;
+        }
+
         const countyData = {
             id: target.i,
             name: this.counties[target.i].name,

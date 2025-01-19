@@ -10,19 +10,9 @@ mapManager.loadCounties();
 
 eventBus.emit("changePage", { page: "stats" });
 
+pageManager.initEvents();
+
 let mobile = window.innerWidth < 1100;
-
-var asideButtons = document.getElementsByClassName("aside-button");
-
-function clickStats(e) {
-    eventBus.emit("changePage", { page: "stats", target: e.currentTarget });
-}
-
-function clickPowiat(e) {
-    if (mapManager.selected) {
-        eventBus.emit("changePage", { page: "county", target: mapManager.selected });
-    }
-}
 
 function changeDate(event) {
     event.preventDefault();
@@ -54,15 +44,6 @@ function changeDate(event) {
         }
     }
 }
-
-function clickSave() {
-    eventBus.emit("changePage", { page: "save" });
-}
-
-function clickSettings() {
-    eventBus.emit("changePage", { page: "settings" });
-}
-
 let viewBox = { x: 0, y: 0, width: 800, height: 744 };
 
 function scaleMap(event) {
@@ -98,10 +79,6 @@ function scaleMap(event) {
     map.setAttribute("viewBox", `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
 }
 
-document.getElementById("aside-stats").addEventListener("click", clickStats);
-document.getElementById("aside-county").addEventListener("click", clickPowiat);
-document.getElementById("aside-save").addEventListener("click", clickSave);
-document.getElementById("aside-settings").addEventListener("click", clickSettings);
 // if (!mobile) {
 //     document.getElementById("aside-stats").addEventListener("mouseover", () => document.getElementById("aside-text").classList.add("border-radius-first"));
 //     document
