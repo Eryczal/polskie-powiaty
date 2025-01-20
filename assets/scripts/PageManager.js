@@ -4,6 +4,11 @@ class PageManager {
     constructor(eventBus) {
         this.eventBus = eventBus;
         this.darkMode = false;
+
+        this.loadDarkMode();
+    }
+
+    init() {
         this.oldPage = null;
         this.page = null;
         this.activeEvents = [];
@@ -15,8 +20,6 @@ class PageManager {
         this.eventBus.on("clickSaveReset", () => this.resetData());
         this.eventBus.on("exportData", (data) => this.showExport(data));
         this.eventBus.on("clickChangeMode", () => this.changeMode());
-
-        this.loadDarkMode();
     }
 
     preparePageData({ page, target = null }) {

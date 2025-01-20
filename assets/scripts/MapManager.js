@@ -3,7 +3,9 @@ import counties from "./data/counties.js";
 class MapManager {
     constructor(eventBus) {
         this.eventBus = eventBus;
+    }
 
+    init() {
         this.intl = new Intl.DateTimeFormat("pl-PL", { dateStyle: "long" });
 
         this.counties = [];

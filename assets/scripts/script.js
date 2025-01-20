@@ -6,12 +6,25 @@ const eventBus = new EventBus();
 const mapManager = new MapManager(eventBus);
 const pageManager = new PageManager(eventBus);
 
-mapManager.loadCounties();
-pageManager.initEvents();
-
-eventBus.emit("changePage", { page: "stats" });
-
 let viewBox = { x: 0, y: 0, width: 800, height: 744 };
+
+async function loadSvg() {
+    fetch("./assets/map.svg")
+        .then((response) => response.text())
+        .then((data) => {
+            document.getElementById("main").insertAdjacentHTML("afterbegin", data);
+
+            mapManager.init();
+            pageManager.init();
+
+            mapManager.loadCounties();
+            pageManager.initEvents();
+
+            eventBus.emit("changePage", { page: "stats" });
+
+            document.getElementById("map").addEventListener("wheel", scaleMap);
+        });
+}
 
 function scaleMap(event) {
     event.preventDefault();
@@ -46,4 +59,4 @@ function scaleMap(event) {
     map.setAttribute("viewBox", `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
 }
 
-document.getElementById("map").addEventListener("wheel", scaleMap);
+loadSvg();
