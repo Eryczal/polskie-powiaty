@@ -1,4 +1,4 @@
-var powiats = [
+const counties = [
     { name: "powiat ropczycko-sędziszowski" },
     { name: "powiat łosicki" },
     { name: "powiat piaseczyński" },
@@ -381,4 +381,4 @@ var powiats = [
     { name: "powiat staszowski" },
 ];
 
-export default powiats;
+export default counties;
