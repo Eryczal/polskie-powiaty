@@ -3,6 +3,15 @@ import counties from "./data/counties.js";
 class MapManager {
     constructor(eventBus) {
         this.eventBus = eventBus;
+
+        this.initial = {
+            x: 0,
+            y: 0,
+            width: 800,
+            height: 744,
+        };
+
+        this.viewBox = { ...this.initial };
     }
 
     init() {
@@ -34,6 +43,40 @@ class MapManager {
         this.eventBus.on("clickCountyUnselect", () => this.unselectCounty());
         this.eventBus.on("clickCountyUnvisited", (data) => this.unsetCounty(data));
         this.eventBus.on("editCountyDate", () => this.editCountyDate());
+
+        document.getElementById("map").addEventListener("wheel", (e) => this.scaleMap(e));
+    }
+
+    scaleMap(e) {
+        e.preventDefault();
+
+        const map = document.getElementById("map");
+
+        const rect = map.getBoundingClientRect();
+
+        const [mouseX, mouseY] = [e.clientX - rect.left, e.clientY - rect.top];
+        const [svgX, svgY] = [(mouseX / rect.width) * this.viewBox.width + this.viewBox.x, (mouseY / rect.height) * this.viewBox.height + this.viewBox.y];
+
+        const zoomFactor = 0.1;
+        const zoomDirection = e.deltaY < 0 ? 1 : -1;
+        const scaleChange = zoomDirection * zoomFactor;
+
+        const newWidth = Math.min(Math.max(this.viewBox.width * (1 - scaleChange), this.initial.width / 20), this.initial.width);
+        const newHeight = Math.min(Math.max(this.viewBox.height * (1 - scaleChange), this.initial.height / 20), this.initial.height);
+
+        this.viewBox = {
+            x: svgX - ((svgX - this.viewBox.x) * newWidth) / this.viewBox.width,
+            y: svgY - ((svgY - this.viewBox.y) * newHeight) / this.viewBox.height,
+            width: newWidth,
+            height: newHeight,
+        };
+
+        if (newWidth >= this.initial.width && newHeight >= this.initial.height) {
+            this.viewBox.x = 0;
+            this.viewBox.y = 0;
+        }
+
+        map.setAttribute("viewBox", `${this.viewBox.x} ${this.viewBox.y} ${this.viewBox.width} ${this.viewBox.height}`);
     }
 
     selectCounty(e) {
