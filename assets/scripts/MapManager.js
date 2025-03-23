@@ -174,21 +174,36 @@ class MapManager {
             return;
         }
 
-        newDate = newDate.split(".");
+        newDate = newDate.trim();
 
-        if (newDate.length !== 3) {
+        const dateParts = newDate.split(".");
+        if (dateParts.length !== 3) {
             return;
         }
 
-        if (parseInt(newDate[0]) < 1 || parseInt(newDate[0]) > 31) {
+        const [dayStr, monthStr, yearStr] = dateParts;
+        const day = parseInt(dayStr, 10);
+        const month = parseInt(monthStr, 10) - 1;
+        const year = parseInt(yearStr, 10);
+
+        if (isNaN(day) || isNaN(month) || isNaN(year) || day < 1 || day > 31 || month < 0 || month > 11 || year < 1000) {
             return;
         }
 
-        if (parseInt(newDate[1]) < 1 || parseInt(newDate[1]) > 12) {
+        const dateObj = new Date(year, month, day);
+
+        if (dateObj.getFullYear() !== year || dateObj.getMonth() !== month || dateObj.getDate() !== day) {
             return;
         }
 
-        this.counties[this.selected.i].date = new Date(parseInt(newDate[2]), parseInt(newDate[1]) - 1, parseInt(newDate[0]));
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        if (dateObj > now) {
+            return;
+        }
+
+        this.counties[this.selected.i].date = dateObj;
         document.getElementById("visited-date").innerHTML = this.intl.format(this.counties[this.selected.i].date);
         this.saveCounties();
     }
