@@ -212,6 +212,10 @@ class MapManager {
     }
 
     setCounty({ id }, state) {
+        if (state === 2 && this.counties.some((county) => county.state === 2)) {
+            return;
+        }
+
         const county = this.counties[id];
 
         switch (county.state) {
@@ -221,10 +225,6 @@ class MapManager {
 
             case state:
                 return;
-        }
-
-        if (state === 2 && this.counties.some((county) => county.state === 2)) {
-            return;
         }
 
         county.element.classList.remove("visited");
