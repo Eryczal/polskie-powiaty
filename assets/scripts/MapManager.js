@@ -235,16 +235,23 @@ class MapManager {
 
         const county = this.counties[id];
 
-        if (state !== 3) {
-            switch (county.state) {
-                case 0:
-                case 3:
-                    this.visitedCounties++;
-                    break;
+        switch (county.state) {
+            case 0:
+            case 3:
+                this.visitedCounties++;
+                break;
 
-                case state:
-                    return;
-            }
+            case state:
+                return;
+        }
+
+        switch (state) {
+            case 3:
+                this.visitedCounties--;
+                break;
+
+            default:
+                break;
         }
 
         county.element.classList.remove(this.countyStates[county.state - 1]);
@@ -307,7 +314,10 @@ class MapManager {
                 county.state = jsonData[i].state;
 
                 if (county.state !== 0) {
-                    county.element.classList.add(county.state === 1 ? "visited" : "starting");
+                    county.element.classList.add(this.countyStates[county.state - 1]);
+                }
+
+                if (county.state === 1 || county.state === 2) {
                     this.visitedCounties++;
                 }
             });
