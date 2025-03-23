@@ -17,6 +17,7 @@ const pages = {
             <p id="powiat-state">${state} ${icon}</p>
             <div class="powiat-buttons">
                 <div class="powiat-button" id="button-county-visited">Oznacz jako odwiedzony</div>
+                <div class="powiat-button" id="button-county-planned">Oznacz jako zaplanowany</div>
                 <div class="powiat-button" id="button-starting-county">Oznacz jako początkowy</div>
                 <div class="powiat-button" id="button-county-unselect">Odznacz mapę</div>
                 <div class="powiat-button" id="button-county-unvisited">Oznacz jako nieodwiedzony</div>
@@ -27,6 +28,12 @@ const pages = {
                 {
                     type: "click",
                     handler: "clickCountyVisited",
+                },
+            ],
+            "#button-county-planned": [
+                {
+                    type: "click",
+                    handler: "clickCountyPlanned",
                 },
             ],
             "#button-starting-county": [

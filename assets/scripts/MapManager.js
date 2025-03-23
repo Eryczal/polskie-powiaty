@@ -16,6 +16,7 @@ class MapManager {
 
     init() {
         this.intl = new Intl.DateTimeFormat("pl-PL", { dateStyle: "long" });
+        this.countyStates = ["visited", "starting", "planned"];
 
         this.counties = [];
         this.visitedCounties = 0;
@@ -40,6 +41,7 @@ class MapManager {
         this.eventBus.on("resetData", () => this.resetData());
         this.eventBus.on("clickCountyVisited", (data) => this.setCounty(data, 1));
         this.eventBus.on("clickCountyStarting", (data) => this.setCounty(data, 2));
+        this.eventBus.on("clickCountyPlanned", (data) => this.setCounty(data, 3));
         this.eventBus.on("clickCountyUnselect", () => this.unselectCounty());
         this.eventBus.on("clickCountyUnvisited", (data) => this.unsetCounty(data));
         this.eventBus.on("editCountyDate", () => this.editCountyDate());
@@ -233,20 +235,21 @@ class MapManager {
 
         const county = this.counties[id];
 
-        switch (county.state) {
-            case 0:
-                this.visitedCounties++;
-                break;
+        if (state !== 3) {
+            switch (county.state) {
+                case 0:
+                case 3:
+                    this.visitedCounties++;
+                    break;
 
-            case state:
-                return;
+                case state:
+                    return;
+            }
         }
 
-        county.element.classList.remove("visited");
-        county.element.classList.remove("starting");
-
+        county.element.classList.remove(this.countyStates[county.state - 1]);
         county.state = state;
-        county.element.classList.add(state === 1 ? "visited" : "starting");
+        county.element.classList.add(this.countyStates[county.state - 1]);
         county.date = new Date();
 
         this.saveCounties();
@@ -260,13 +263,14 @@ class MapManager {
             return;
         }
 
-        county.element.classList.remove("visited");
-        county.element.classList.remove("starting");
+        county.element.classList.remove(this.countyStates[county.state - 1]);
+
+        if (county.state !== 3) {
+            this.visitedCounties--;
+        }
 
         county.state = 0;
         county.date = null;
-
-        this.visitedCounties--;
 
         this.saveCounties();
         this.eventBus.emit("changePage", { page: "county", target: county.element });
@@ -278,6 +282,7 @@ class MapManager {
             "Powiat nie został jeszcze przez ciebie odwiedzony.",
             `Powiat został przez ciebie odwiedzony <span id="visited-date">${this.intl.format(county.date)}</span>.`,
             "Powiat wybrany przez ciebie jako początkowy.",
+            "Powiat został oznaczony jako zaplanowany.",
         ];
 
         return states[county.state];

@@ -9,6 +9,8 @@
     --color-map-selected: #999;
     --color-map-visited: #f66;
     --color-map-visited-selected: #c33;
+    --color-map-planned: #fc3;
+    --color-map-planned-selected: #c93;
     --color-map-starting: #66f;
     --color-map-starting-selected: #33c;
 
@@ -30,6 +32,8 @@ body.dark-mode {
     --color-map-selected: #555;
     --color-map-visited: #633;
     --color-map-visited-selected: #600;
+    --color-map-planned: #653;
+    --color-map-planned-selected: #640;
     --color-map-starting: #336;
     --color-map-starting-selected: #006;
 
@@ -154,6 +158,10 @@ body {
     fill: var(--color-map-visited);
 }
 
+.map .planned {
+    fill: var(--color-map-planned);
+}
+
 .map .starting {
     fill: var(--color-map-starting);
 }
@@ -166,8 +174,12 @@ body {
     animation: alternate 0.7s infinite visitedSelectedAnim ease-in-out;
 }
 
+.selected.planned {
+    animation: alternate 0.7s infinite plannedSelectedAnim ease-in-out;
+}
+
 .selected.starting {
-    animation: alternate 0.7s infinite visitedStartingAnim ease-in-out;
+    animation: alternate 0.7s infinite startingSelectedAnim ease-in-out;
 }
 
 @media screen and (max-width: 1100px) {
@@ -221,7 +233,16 @@ body {
     }
 }
 
-@keyframes visitedStartingAnim {
+@keyframes plannedSelectedAnim {
+    from {
+        fill: var(--color-map-planned);
+    }
+    to {
+        fill: var(--color-map-planned-selected);
+    }
+}
+
+@keyframes startingSelectedAnim {
     from {
         fill: var(--color-map-starting);
     }
