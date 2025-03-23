@@ -99,7 +99,7 @@ class MapManager {
     }
 
     getStats() {
-        const validCounties = this.counties.filter((county) => !Number.isNaN(Date.parse(county.date)));
+        const validCounties = this.counties.filter((county) => !Number.isNaN(Date.parse(county.date)) && county.state === 1);
         let firstCounty = null;
         let lastCounty = null;
 
